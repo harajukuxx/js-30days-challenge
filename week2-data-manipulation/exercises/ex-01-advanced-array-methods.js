@@ -143,3 +143,148 @@ const regionSales = globalOrders
   }, {});
 
 console.log("🚀 ~ regionSales:", regionSales);
+
+// ###########################################################################################
+/*
+ข้อที่ 1: ตรวจสอบความพร้อมของระบบ (ระดับ: ง่าย 🟢)
+เครื่องมือที่ใช้: every หรือ some
+สถานการณ์: ระบบต้องการตรวจสอบว่าเครื่องเซิร์ฟเวอร์ในคลาสเตอร์ (Cluster) พร้อมให้บริการหรือไม่ 
+โดยระบบจะถือว่าพร้อมทำงานก็ต่อเมื่อ เซิร์ฟเวอร์ทุกเครื่องมีสถานะเป็น "active" และมี CPU Usage ต่ำกว่า 90%
+
+JavaScript
+const servers = [
+  { id: "SVR-01", status: "active", cpuUsage: 45 },
+  { id: "SVR-02", status: "active", cpuUsage: 88 },
+  { id: "SVR-03", status: "active", cpuUsage: 12 },
+  { id: "SVR-04", status: "maintenance", cpuUsage: 0 } // <-- มีเครื่องนึงปิดซ่อมบำรุง
+];
+
+// 📝 จงเขียนโค้ดเพื่อตรวจสอบว่าระบบ "พร้อมให้บริการทั้งหมด" หรือไม่
+const isClusterReady = // ... เขียนโค้ดของคุณตรงนี้
+
+console.log(isClusterReady); // ผลลัพธ์ที่ควรได้: false
+*/
+const servers = [
+  { id: "SVR-01", status: "active", cpuUsage: 45 },
+  { id: "SVR-02", status: "active", cpuUsage: 88 },
+  { id: "SVR-03", status: "active", cpuUsage: 12 },
+  { id: "SVR-04", status: "maintenance", cpuUsage: 0 }, // <-- มีเครื่องนึงปิดซ่อมบำรุง
+];
+
+const isClusterReady = servers.every(
+  (item) => item.status === "active" && item.cpuUsage < 90,
+);
+console.log("🚀 ~ isClusterReady:", isClusterReady);
+
+/*
+ข้อที่ 2: ค้นหารายการธุรกรรมทางการเงิน (ระดับ: ปานกลาง 🟡)
+เครื่องมือที่ใช้: find
+สถานการณ์: คุณกำลังทำระบบ API เพื่อตรวจสอบประวัติการโอนเงิน (Transaction Audit) 
+โดยต้องการหา "ธุรกรรมแรก" ที่มียอดโอน (amount) ตั้งแต่ 50,000 บาทขึ้นไป และมีสถานะเป็น "pending" เพื่อส่งไปให้ทีมตรวจสอบการฟอกเงิน
+
+JavaScript
+const transactions = [
+  { txnId: "TXN-001", amount: 2500, status: "completed" },
+  { txnId: "TXN-002", amount: 120000, status: "completed" }, // ยอดถึง แต่ตรวจสอบผ่านไปแล้ว
+  { txnId: "TXN-003", amount: 75000, status: "pending" },    // <-- ควรเจอตัวนี้ (ตัวแรกที่เข้าเงื่อนไขครบ)
+  { txnId: "TXN-004", amount: 200000, status: "pending" }
+];
+
+// 📝 จงค้นหาธุรกรรมที่เข้าเงื่อนไขดังกล่าวข้างต้น
+const highRiskPendingTxn = // ... เขียนโค้ดของคุณตรงนี้
+
+console.log(highRiskPendingTxn); 
+// ผลลัพธ์ที่ควรได้: { txnId: "TXN-003", amount: 75000, status: "pending" }
+*/
+const transactions = [
+  { txnId: "TXN-001", amount: 2500, status: "completed" },
+  { txnId: "TXN-002", amount: 120000, status: "completed" }, // ยอดถึง แต่ตรวจสอบผ่านไปแล้ว
+  { txnId: "TXN-003", amount: 75000, status: "pending" }, // <-- ควรเจอตัวนี้ (ตัวแรกที่เข้าเงื่อนไขครบ)
+  { txnId: "TXN-004", amount: 200000, status: "pending" },
+];
+
+const highRiskPendingTxn = transactions.find(
+  (item) => item.status === "pending" && item.amount >= 50000,
+);
+console.log("🚀 ~ highRiskPendingTxn:", highRiskPendingTxn);
+
+/*
+ข้อที่ 3: อัปเดตสิทธิ์ผู้ใช้งานในระบบ Memory (ระดับ: ท้าทาย 🟠)
+เครื่องมือที่ใช้: findIndex
+สถานการณ์: แอดมินยิง API มาเพื่อต้องการแบนผู้ใช้งานที่มีไอดี "USR-779" โดยการเปลี่ยน role ของเขาให้กลายเป็น "banned"
+เงื่อนไข: ต้องหาตำแหน่ง Index ของผู้ใช้คนนี้ให้เจอก่อน ถ้าเจอให้ทำการเปลี่ยนค่า role ใน Array ต้นฉบับ แต่ถ้าไม่เจอ (เป็น -1) ให้สั่ง console.log("User not found")
+
+JavaScript
+const users = [
+  { userId: "USR-102", name: "Alice", role: "member" },
+  { userId: "USR-779", name: "Bob", role: "moderator" }, // <-- เป้าหมายที่ต้องถูกเปลี่ยนสิทธิ์
+  { userId: "USR-441", name: "Charlie", role: "member" }
+];
+
+const targetUserId = "USR-779";
+
+// 📝 จงหา Index และอัปเดตสิทธิ์ของ Bob ให้กลายเป็น "banned"
+// ... เขียนโค้ดของคุณตรงนี้
+
+console.log(users);
+/* ผลลัพธ์ที่ควรได้ใน users:
+[
+  { userId: "USR-102", name: "Alice", role: "member" },
+  { userId: "USR-779", name: "Bob", role: "banned" }, // <-- เปลี่ยนแล้ว
+  { userId: "USR-441", name: "Charlie", role: "member" }
+]
+*/
+const users = [
+  { userId: "USR-102", name: "Alice", role: "member" },
+  { userId: "USR-779", name: "Bob", role: "moderator" }, // <-- เป้าหมายที่ต้องถูกเปลี่ยนสิทธิ์
+  { userId: "USR-441", name: "Charlie", role: "member" },
+];
+
+const targetUserId = "USR-779";
+const findUserid = users.findIndex((item) => item.userId === targetUserId);
+console.log("🚀 ~ findUserid:", findUserid);
+if (findUserid !== -1) {
+  users[findUserid].role = "banned";
+  console.log("🚀 ~ users:", users);
+  console.log("Update เรียบร้อยแล้ว");
+} else {
+  console.log("User not found");
+}
+
+/*
+ข้อที่ 4: จัดอันดับบทความยอดนิยมบน Dashboard (ระดับ: ปราบเซียน 🔴)
+เครื่องมือที่ใช้: sort (ร่วมกับการเข้าถึง Object Property และการป้องกัน Data Mutation)
+สถานการณ์: คุณต้องส่งข้อมูลไปแสดงผลบน Dashboard หน้าบ้าน โดยต้องการเรียงลำดับบทความ (Articles) 
+จาก บทความที่มียอดคนดู (views) สูงที่สุด ลงไปหาน้อยที่สุด เงื่อนไขพิเศษ: ห้ามแก้ไขหรือกระทบกระเทือนลำดับของ Array articles ต้นฉบับเด็ดขาด (ห้ามเกิด Mutation)
+
+JavaScript
+const articles = [
+  { title: "Node.js Performance Tips", views: 2450 },
+  { title: "Understanding Event Loop", views: 4800 }, // <-- ควรขึ้นอันดับ 1
+  { title: "Express.js vs NestJS", views: 1200 },
+  { title: "Mastering TypeScript", views: 3100 }
+];
+
+// 📝 จงสร้าง Array ใหม่ที่เรียงลำดับบทความจาก views มาก -> น้อย โดยไม่กระทบตัวแปร articles
+const topArticles = // ... เขียนโค้ดของคุณตรงนี้
+
+console.log("--- Top Articles ---");
+console.log(topArticles); 
+/* ผลลัพธ์ที่ควรได้: Event Loop (4800) -> TypeScript (3100) -> Node.js (2450) -> Express (1200) 
+
+console.log("--- Original Articles (Must not change) ---");
+console.log(articles[0].title); // ต้องยังคงเป็น "Node.js Performance Tips" เหมือนเดิม
+*/
+
+const articles = [
+  { title: "Node.js Performance Tips", views: 2450 },
+  { title: "Understanding Event Loop", views: 4800 }, // <-- ควรขึ้นอันดับ 1
+  { title: "Express.js vs NestJS", views: 1200 },
+  { title: "Mastering TypeScript", views: 3100 },
+];
+
+const topArticles = [...articles].toSorted((a, b) => b.views - a.views);
+console.log("--- Top Articles ---");
+console.log(topArticles);
+console.log("--- Original Articles (Must not change) ---");
+console.log(articles[0].title); // ต้องยังคงเป็น "Node.js Performance Tips" เหมือนเดิม

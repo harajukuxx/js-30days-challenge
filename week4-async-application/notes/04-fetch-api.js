@@ -166,3 +166,15 @@ async function runDemo() {
 
 // รันทดสอบ
 runDemo();
+
+/*
+import { ApiClient } from './ApiClient.js';
+
+const api = new ApiClient('https://jsonplaceholder.typicode.com');
+
+// ใช้งานได้เลย
+const post = await api.get('/posts/1');
+const newPost = await api.post('/posts', { title: 'Hello', body: 'World' });
+await api.put('/posts/1', { title: 'Updated' });
+await api.delete('/posts/1');
+*/
